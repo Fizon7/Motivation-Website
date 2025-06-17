@@ -1,0 +1,1088 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+  background: linear-gradient(to right, #f0f4f8, #dff9fb);
+  font-family: 'Montserrat', 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.quote-box {
+  width: 70%;
+  min-height: 150px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 30px;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 40px;
+  transition: background 0.5s, color 0.5s;
+}
+
+#generateBtn {
+  position: absolute;
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: none;
+  background-color: #22a6b3;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#generateBtn:hover {
+  background-color: #1e90a2;
+}
+
+#quoteActions {
+  margin-bottom: 24px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+#favoriteBtn, #copyBtn, #shareBtn, #printBtn {
+  background: none;
+  border: none;
+  font-size: 1.7rem;
+  cursor: pointer;
+}
+
+#copyBtn, #shareBtn, #printBtn {
+  font-size: 1.5rem;
+}
+
+footer {
+  position: fixed;
+  bottom: 10px;
+  text-align: center;
+  width: 100%;
+  font-weight: bold;
+  color: #555;
+  padding-bottom: 40px;
+}
+
+footer a {
+  color: #22a6b3;
+  text-decoration: underline;
+}
+
+#themeSwitcher {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: #fff;
+  border-radius: 50%;
+  border: none;
+  width: 48px;
+  height: 48px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  cursor: pointer;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#favoritesModal, #helpModal, #creditsModal, #settingsModal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.4);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+}
+
+#favoritesModal > div, 
+#helpModal > div, 
+#creditsModal > div, 
+#settingsModal > div {
+  background: #fff;
+  padding: 32px 24px;
+  border-radius: 16px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  position: relative;
+}
+
+#closeFavorites, #closeHelp, #closeCredits, #closeSettings {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+#favoritesList {
+  max-height: 300px;
+  overflow: auto;
+  margin-bottom: 16px;
+}
+
+#bgCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+}
+
+body.dark {
+  background: linear-gradient(to right, #232526, #414345);
+  color: #eee;
+}
+
+body.dark .quote-box {
+  background: #232526;
+  color: #eee;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+}
+
+body.dark footer, body.dark a {
+  color: #bbb !important;
+}
+
+#generateBtn.animated {
+  animation: bounce 0.4s;
+}
+
+@keyframes bounce {
+    0% { transform: scale(1);}
+    30% { transform: scale(1.15);}
+    60% { transform: scale(0.95);}
+    100% { transform: scale(1);}
+}
+
+/* --- Enhanced Styles --- */
+
+/* Add smooth transitions for theme switch */
+body, .quote-box, footer {
+    transition: background 0.5s, color 0.5s;
+}
+
+/* Responsive quote box */
+@media (max-width: 700px) {
+    .quote-box {
+        width: 95%;
+        font-size: 1.1rem;
+        padding: 18px;
+    }
+}
+
+/* Add subtle hover effect to quote box */
+.quote-box:hover {
+    box-shadow: 0 12px 32px rgba(34,166,179,0.15);
+    background: #f8fbfd;
+}
+
+/* Improve button focus accessibility */
+#generateBtn:focus,
+#favoriteBtn:focus,
+#copyBtn:focus,
+#shareBtn:focus,
+#printBtn:focus,
+#themeSwitcher:focus {
+    outline: 2px solid #22a6b3;
+    outline-offset: 2px;
+}
+
+/* Animate modal appearance */
+#favoritesModal[style*="display: flex"],
+#helpModal[style*="display: flex"],
+#creditsModal[style*="display: flex"],
+#settingsModal[style*="display: flex"] {
+    animation: modalFadeIn 0.3s;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: scale(0.96);}
+    to { opacity: 1; transform: scale(1);}
+}
+
+/* Add a soft border to modals for depth */
+#favoritesModal > div, 
+#helpModal > div, 
+#creditsModal > div, 
+#settingsModal > div {
+    border: 1px solid #e0e6ed;
+}
+
+/* Style scrollbars for favorites list */
+#favoritesList {
+    scrollbar-width: thin;
+    scrollbar-color: #22a6b3 #f0f4f8;
+}
+#favoritesList::-webkit-scrollbar {
+    width: 8px;
+}
+#favoritesList::-webkit-scrollbar-thumb {
+    background: #22a6b3;
+    border-radius: 8px;
+}
+#favoritesList::-webkit-scrollbar-track {
+    background: #f0f4f8;
+}
+
+/* Add a subtle hover effect to action buttons */
+#favoriteBtn:hover, 
+#copyBtn:hover, 
+#shareBtn:hover, 
+#printBtn:hover {
+    color: #22a6b3;
+    background: #eaf7fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(34,166,179,0.10);
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    outline: none;
+}
+
+/* --- Upgraded and Enhanced Styles --- */
+
+/* Tooltip styles for action buttons */
+#favoriteBtn[data-tooltip]:hover::after,
+#copyBtn[data-tooltip]:hover::after,
+#shareBtn[data-tooltip]:hover::after,
+#printBtn[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    background: #22a6b3;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    top: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    opacity: 1;
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(34,166,179,0.10);
+    animation: tooltipFadeIn 0.2s;
+}
+
+@keyframes tooltipFadeIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Add ripple effect to main button */
+#generateBtn {
+    overflow: hidden;
+    position: relative;
+}
+#generateBtn:active::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(34,166,179,0.2);
+    border-radius: 100%;
+    transform: translate(-50%, -50%);
+    animation: ripple 0.5s linear;
+    z-index: 1;
+}
+@keyframes ripple {
+    to {
+        width: 200%;
+        height: 200%;
+        opacity: 0;
+    }
+}
+
+/* Animated gradient border for quote box */
+.quote-box {
+    border: 3px solid transparent;
+    background-clip: padding-box, border-box;
+    background-origin: padding-box, border-box;
+    background-image: linear-gradient(white, white), linear-gradient(90deg, #22a6b3 0%, #dff9fb 100%);
+}
+
+/* Dark mode gradient border */
+body.dark .quote-box {
+    background-image: linear-gradient(#232526, #232526), linear-gradient(90deg, #22a6b3 0%, #232526 100%);
+}
+
+/* Add subtle shadow to theme switcher */
+#themeSwitcher {
+    box-shadow: 0 4px 16px rgba(34,166,179,0.15);
+    transition: box-shadow 0.3s;
+}
+#themeSwitcher:hover {
+    box-shadow: 0 8px 32px rgba(34,166,179,0.25);
+    background: #eaf7fa;
+}
+
+/* Modal overlay fade-in animation */
+#favoritesModal[style*="display: flex"],
+#helpModal[style*="display: flex"],
+#creditsModal[style*="display: flex"],
+#settingsModal[style*="display: flex"] {
+    animation: modalFadeIn 0.3s, overlayFadeIn 0.3s;
+}
+@keyframes overlayFadeIn {
+    from { background: rgba(0,0,0,0); }
+    to { background: rgba(0,0,0,0.4); }
+}
+
+/* Modal close button hover effect */
+#closeFavorites:hover, #closeHelp:hover, #closeCredits:hover, #closeSettings:hover {
+    color: #22a6b3;
+    background: #eaf7fa;
+    border-radius: 50%;
+    transition: background 0.2s, color 0.2s;
+}
+
+/* Settings modal: toggle switches */
+.settings-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+.settings-toggle input[type="checkbox"] {
+    width: 40px;
+    height: 22px;
+    appearance: none;
+    background: #e0e6ed;
+    border-radius: 12px;
+    position: relative;
+    outline: none;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.settings-toggle input[type="checkbox"]:checked {
+    background: #22a6b3;
+}
+.settings-toggle input[type="checkbox"]::before {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.3s;
+}
+.settings-toggle input[type="checkbox"]:checked::before {
+    transform: translateX(18px);
+}
+
+/* Favorites modal: empty state */
+#favoritesList:empty::before {
+    content: "No favorites yet. Click the heart to save quotes!";
+    display: block;
+    color: #aaa;
+    font-size: 1.1rem;
+    text-align: center;
+    margin-top: 40px;
+}
+
+/* Add animation to favorite heart */
+#favoriteBtn.favorited {
+    color: #e74c3c;
+    animation: heartBeat 0.5s;
+}
+@keyframes heartBeat {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.3); }
+    60% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+}
+
+/* Share button pulse animation */
+#shareBtn.animated {
+    animation: sharePulse 0.5s;
+}
+@keyframes sharePulse {
+    0% { box-shadow: 0 0 0 0 #22a6b3; }
+    70% { box-shadow: 0 0 0 10px rgba(34,166,179,0); }
+    100% { box-shadow: 0 0 0 0 rgba(34,166,179,0); }
+}
+
+/* Print button print preview style */
+@media print {
+    body, .quote-box {
+        background: #fff !important;
+        color: #222 !important;
+    }
+    #generateBtn, #quoteActions, #themeSwitcher, footer, #favoritesModal, #helpModal, #creditsModal, #settingsModal {
+        display: none !important;
+    }
+    .quote-box {
+        box-shadow: none !important;
+        border: none !important;
+    }
+}
+
+/* Accessibility: high contrast mode */
+body.high-contrast {
+    background: #000 !important;
+    color: #fff !important;
+}
+body.high-contrast .quote-box {
+    background: #000 !important;
+    color: #fff !important;
+    border: 2px solid #fff !important;
+}
+body.high-contrast #generateBtn,
+body.high-contrast #themeSwitcher {
+    background: #fff !important;
+    color: #000 !important;
+    border: 2px solid #000 !important;
+}
+body.high-contrast a, body.high-contrast footer {
+    color: #fff !important;
+}
+
+/* Responsive modal for small screens */
+@media (max-width: 500px) {
+    #favoritesModal > div, 
+    #helpModal > div, 
+    #creditsModal > div, 
+    #settingsModal > div {
+        padding: 16px 6px;
+        max-width: 98vw;
+    }
+    .settings-toggle {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* Add focus ring for accessibility on modal close buttons */
+#closeFavorites:focus, #closeHelp:focus, #closeCredits:focus, #closeSettings:focus {
+    outline: 2px solid #e74c3c;
+    outline-offset: 2px;
+}
+
+/* Subtle fade-in for quote box on quote change */
+.quote-box.fade-in {
+    animation: quoteFadeIn 0.5s;
+}
+@keyframes quoteFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Add a floating action button for quick help */
+#helpFab {
+    position: fixed;
+    bottom: 80px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    background: #22a6b3;
+    color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 4px 16px rgba(34,166,179,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    border: none;
+    cursor: pointer;
+    z-index: 1200;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+#helpFab:hover {
+    background: #1e90a2;
+    box-shadow: 0 8px 32px rgba(34,166,179,0.28);
+}
+
+/* Animate helpFab on click */
+#helpFab.animated {
+    animation: fabBounce 0.4s;
+}
+@keyframes fabBounce {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.18); }
+    60% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+}
+
+/* Add a progress bar for quote loading */
+#quoteProgress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 4px;
+    width: 0;
+    background: linear-gradient(90deg, #22a6b3, #dff9fb);
+    border-radius: 2px;
+    transition: width 0.4s;
+    z-index: 10;
+}
+body.dark #quoteProgress {
+    background: linear-gradient(90deg, #22a6b3, #232526);
+}
+
+/* Add a subtle background pattern */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: -2;
+    opacity: 0.07;
+    background: url('data:image/svg+xml;utf8,<svg width="40" height="40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="40" height="40" fill="white"/><circle cx="20" cy="20" r="2" fill="%2322a6b3" /></svg>');
+    pointer-events: none;
+}
+body.dark::before {
+    opacity: 0.13;
+    background: url('data:image/svg+xml;utf8,<svg width="40" height="40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="40" height="40" fill="black"/><circle cx="20" cy="20" r="2" fill="%2322a6b3" /><circle cx="10" cy="30" r="1.2" fill="%2322a6b3" /><circle cx="30" cy="10" r="1.2" fill="%2322a6b3" /></svg>');
+    transition: opacity 0.5s, background 0.5s;
+}
+
+/* Add animated floating dots for dark mode background */
+@keyframes floatDots {
+    0% { transform: translateY(0);}
+    50% { transform: translateY(-10px);}
+    100% { transform: translateY(0);}
+}
+body.dark::after {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 18% 32%, rgba(34,166,179,0.13) 0%, transparent 60%),
+        radial-gradient(circle at 82% 68%, rgba(34,166,179,0.10) 0%, transparent 70%),
+        radial-gradient(circle at 50% 85%, rgba(34,166,179,0.07) 0%, transparent 80%);
+    animation: floatDots 7s ease-in-out infinite alternate;
+    opacity: 0.8;
+    transition: opacity 0.5s;
+    will-change: opacity, background, transform;
+}
+
+/* --- Enhanced Visuals & Microinteractions --- */
+
+/* Add glassmorphism effect to quote box */
+.quote-box {
+    backdrop-filter: blur(8px) saturate(120%);
+    -webkit-backdrop-filter: blur(8px) saturate(120%);
+    background-color: rgba(255,255,255,0.85);
+    border-radius: 18px;
+    border: 1.5px solid rgba(34,166,179,0.13);
+    box-shadow: 0 12px 32px 0 rgba(34,166,179,0.10), 0 1.5px 6px 0 rgba(0,0,0,0.03);
+    transition: box-shadow 0.3s, background 0.5s, color 0.5s;
+}
+
+body.dark .quote-box {
+    background-color: rgba(35,37,38,0.92);
+    border: 1.5px solid rgba(34,166,179,0.18);
+    box-shadow: 0 12px 32px 0 rgba(34,166,179,0.18), 0 1.5px 6px 0 rgba(0,0,0,0.10);
+}
+
+/* Add a subtle gradient border animation */
+@keyframes borderGradientMove {
+    0% { border-image-source: linear-gradient(90deg, #22a6b3 0%, #dff9fb 100%); }
+    50% { border-image-source: linear-gradient(90deg, #dff9fb 0%, #22a6b3 100%); }
+    100% { border-image-source: linear-gradient(90deg, #22a6b3 0%, #dff9fb 100%); }
+}
+.quote-box {
+    border-width: 3px;
+    border-style: solid;
+    border-image-slice: 1;
+    border-image-source: linear-gradient(90deg, #22a6b3 0%, #dff9fb 100%);
+    animation: borderGradientMove 8s linear infinite;
+}
+
+/* Add author styling */
+.quote-author {
+    display: block;
+    margin-top: 18px;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: #22a6b3;
+    letter-spacing: 0.03em;
+    opacity: 0.85;
+    font-style: italic;
+    transition: color 0.4s;
+}
+body.dark .quote-author {
+    color: #dff9fb;
+    opacity: 0.92;
+}
+
+/* Add a decorative quote mark */
+.quote-box::before {
+    content: "“";
+    font-size: 3.5rem;
+    color: #22a6b3;
+    opacity: 0.13;
+    position: absolute;
+    left: 32px;
+    top: 18px;
+    pointer-events: none;
+    font-family: serif;
+}
+body.dark .quote-box::before {
+    color: #dff9fb;
+    opacity: 0.10;
+}
+
+/* Add a decorative closing quote mark */
+.quote-box::after {
+    content: "”";
+    font-size: 3.5rem;
+    color: #22a6b3;
+    opacity: 0.13;
+    position: absolute;
+    right: 32px;
+    bottom: 18px;
+    pointer-events: none;
+    font-family: serif;
+}
+body.dark .quote-box::after {
+    color: #dff9fb;
+    opacity: 0.10;
+}
+
+/* Responsive quote marks */
+@media (max-width: 700px) {
+    .quote-box::before, .quote-box::after {
+        font-size: 2.2rem;
+        left: 10px;
+        right: 10px;
+        top: 6px;
+        bottom: 6px;
+    }
+}
+
+/* Add floating particles animation */
+.particle {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.18;
+    animation: particleFloat 12s infinite linear;
+}
+@keyframes particleFloat {
+    0% { transform: translateY(0) scale(1); opacity: 0.18;}
+    50% { transform: translateY(-40px) scale(1.2); opacity: 0.28;}
+    100% { transform: translateY(0) scale(1); opacity: 0.18;}
+}
+/* Example: add 5 particles (to be generated by JS for best effect) */
+.particle.p1 { width: 32px; height: 32px; left: 8vw; top: 80vh; background: #22a6b3; animation-delay: 0s;}
+.particle.p2 { width: 18px; height: 18px; left: 70vw; top: 60vh; background: #dff9fb; animation-delay: 2s;}
+.particle.p3 { width: 24px; height: 24px; left: 40vw; top: 10vh; background: #22a6b3; animation-delay: 4s;}
+.particle.p4 { width: 14px; height: 14px; left: 85vw; top: 30vh; background: #dff9fb; animation-delay: 6s;}
+.particle.p5 { width: 20px; height: 20px; left: 25vw; top: 50vh; background: #22a6b3; animation-delay: 8s;}
+
+/* Add a subtle glow to the main button */
+#generateBtn {
+    box-shadow: 0 2px 16px 0 rgba(34,166,179,0.10);
+}
+#generateBtn:hover, #generateBtn:focus {
+    box-shadow: 0 4px 32px 0 rgba(34,166,179,0.18);
+    background: linear-gradient(90deg, #22a6b3 60%, #dff9fb 100%);
+    color: #fff;
+}
+
+/* Add icon to generate button */
+#generateBtn::before {
+    content: "⟳";
+    font-size: 1.2rem;
+    margin-right: 10px;
+    opacity: 0.7;
+    vertical-align: middle;
+    transition: opacity 0.2s;
+}
+#generateBtn:active::before {
+    opacity: 1;
+}
+
+/* Add a subtle shadow to action buttons */
+#favoriteBtn, #copyBtn, #shareBtn, #printBtn {
+    box-shadow: 0 1px 4px rgba(34,166,179,0.06);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.7);
+    transition: box-shadow 0.2s, background 0.2s;
+    position: relative;
+}
+body.dark #favoriteBtn, 
+body.dark #copyBtn, 
+body.dark #shareBtn, 
+body.dark #printBtn {
+    background: rgba(35,37,38,0.7);
+}
+
+/* Add a badge to favorite button when there are favorites */
+#favoriteBtn.has-favorites::after {
+    content: "";
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 8px;
+    height: 8px;
+    background: #e74c3c;
+    border-radius: 50%;
+    box-shadow: 0 0 4px #e74c3c55;
+    border: 1.5px solid #fff;
+    z-index: 2;
+}
+
+/* Add a subtle slide-in animation for modals */
+@keyframes modalSlideIn {
+    from { opacity: 0; transform: translateY(40px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+#favoritesModal[style*="display: flex"] > div,
+#helpModal[style*="display: flex"] > div,
+#creditsModal[style*="display: flex"] > div,
+#settingsModal[style*="display: flex"] > div {
+    animation: modalSlideIn 0.4s;
+}
+
+/* Add a divider in modals */
+.modal-divider {
+    height: 1px;
+    background: linear-gradient(90deg, #22a6b3 0%, #dff9fb 100%);
+    margin: 18px 0;
+    border: none;
+    opacity: 0.18;
+}
+
+/* Style modal titles */
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #22a6b3;
+    margin-bottom: 12px;
+    letter-spacing: 0.02em;
+    text-align: center;
+}
+body.dark .modal-title {
+    color: #dff9fb;
+}
+
+/* Style modal content text */
+.modal-content {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 18px;
+    line-height: 1.6;
+}
+body.dark .modal-content {
+    color: #eee;
+}
+
+/* Add a subtle fade-in for the background pattern */
+body::before {
+    animation: patternFadeIn 1.2s;
+}
+@keyframes patternFadeIn {
+    from { opacity: 0; }
+    to { opacity: 0.07; }
+}
+body.dark::before {
+    animation: patternFadeInDark 1.2s;
+}
+@keyframes patternFadeInDark {
+    from { opacity: 0; }
+    to { opacity: 0.13; }
+}
+
+/* Add a floating settings FAB */
+#settingsFab {
+    position: fixed;
+    bottom: 150px;
+    right: 24px;
+    width: 48px;
+    height: 48px;
+    background: #fff;
+    color: #22a6b3;
+    border-radius: 50%;
+    box-shadow: 0 4px 16px rgba(34,166,179,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    border: none;
+    cursor: pointer;
+    z-index: 1200;
+    transition: background 0.2s, box-shadow 0.2s, color 0.2s;
+}
+#settingsFab:hover {
+    background: #eaf7fa;
+    color: #1e90a2;
+    box-shadow: 0 8px 32px rgba(34,166,179,0.25);
+}
+body.dark #settingsFab {
+    background: #232526;
+    color: #dff9fb;
+}
+
+/* Animate settingsFab on click */
+#settingsFab.animated {
+    animation: fabBounce 0.4s;
+}
+
+/* Add a subtle pulse to the progress bar when loading */
+#quoteProgress.loading {
+    animation: progressPulse 1.2s infinite linear;
+}
+@keyframes progressPulse {
+    0% { box-shadow: 0 0 0 0 #22a6b3; }
+    70% { box-shadow: 0 0 0 8px rgba(34,166,179,0.10); }
+    100% { box-shadow: 0 0 0 0 rgba(34,166,179,0); }
+}
+
+/* Add a subtle fade-in for the quote box on load */
+.quote-box.initial-fade {
+    animation: initialFadeIn 1s;
+}
+@keyframes initialFadeIn {
+    from { opacity: 0; transform: scale(0.97); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Add a floating notification for copy/share actions */
+#notification {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #22a6b3;
+    color: #fff;
+    padding: 12px 28px;
+    border-radius: 24px;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 16px rgba(34,166,179,0.18);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 3000;
+    transition: opacity 0.4s, transform 0.4s;
+}
+#notification.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-16px);
+}
+
+/* Add a subtle fade-in for the footer */
+footer {
+    animation: footerFadeIn 1.2s;
+}
+@keyframes footerFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Add a subtle underline animation to links */
+footer a, .modal-content a {
+    position: relative;
+    color: #22a6b3;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+footer a::after, .modal-content a::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: -2px;
+    height: 2px;
+    background: linear-gradient(90deg, #22a6b3 0%, #dff9fb 100%);
+    border-radius: 2px;
+    transform: scaleX(0);
+    transition: transform 0.3s;
+}
+footer a:hover::after, .modal-content a:hover::after {
+    transform: scaleX(1);
+}
+
+/* Add a subtle hover effect to modal close buttons */
+#closeFavorites, #closeHelp, #closeCredits, #closeSettings {
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+#closeFavorites:hover, #closeHelp:hover, #closeCredits:hover, #closeSettings:hover {
+    box-shadow: 0 2px 8px rgba(34,166,179,0.10);
+}
+
+/* Add a subtle shadow to modals */
+#favoritesModal > div, 
+#helpModal > div, 
+#creditsModal > div, 
+#settingsModal > div {
+    box-shadow: 0 8px 32px rgba(34,166,179,0.13), 0 1.5px 6px 0 rgba(0,0,0,0.06);
+}
+
+/* Add a subtle fade-in for the theme switcher */
+#themeSwitcher {
+    animation: themeSwitcherFadeIn 1.1s;
+}
+@keyframes themeSwitcherFadeIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Add a subtle focus ring for all interactive elements */
+button:focus, a:focus, input:focus, select:focus {
+    outline: 2px solid #22a6b3;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px #dff9fb55;
+    transition: box-shadow 0.2s;
+}
+
+/* Add a subtle fade-in for the help FAB */
+#helpFab {
+    animation: helpFabFadeIn 1.2s;
+}
+@keyframes helpFabFadeIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Add a subtle fade-in for the settings FAB */
+#settingsFab {
+    animation: settingsFabFadeIn 1.3s;
+}
+@keyframes settingsFabFadeIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Add a subtle fade-in for the progress bar */
+#quoteProgress {
+    animation: progressFadeIn 0.8s;
+}
+@keyframes progressFadeIn {
+    from { opacity: 0; width: 0; }
+    to { opacity: 1; width: 100%; }
+}
+
+/* Add a subtle fade-in for the favorites modal */
+#favoritesModal > div {
+    animation: favoritesModalFadeIn 0.7s;
+}
+@keyframes favoritesModalFadeIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Add a subtle fade-in for the help modal */
+#helpModal > div {
+    animation: helpModalFadeIn 0.7s;
+}
+@keyframes helpModalFadeIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Add a subtle fade-in for the credits modal */
+#creditsModal > div {
+    animation: creditsModalFadeIn 0.7s;
+}
+@keyframes creditsModalFadeIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Add a subtle fade-in for the settings modal */
+#settingsModal > div {
+    animation: settingsModalFadeIn 0.7s;
+}
+@keyframes settingsModalFadeIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Add a subtle fade-in for the favorites list */
+#favoritesList {
+    animation: favoritesListFadeIn 0.8s;
+}
+@keyframes favoritesListFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Add a subtle fade-in for the help content */
+#helpModal .modal-content {
+    animation: helpContentFadeIn 0.8s;
+}
+@keyframes helpContentFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Add a subtle fade-in for the credits content */
+#creditsModal .modal-content {
+    animation: creditsContentFadeIn 0.8s;
+}
+@keyframes creditsContentFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Add a subtle fade-in for the settings content */
+#settingsModal .modal-content {
+    animation: settingsContentFadeIn 0.8s;
+}
+@keyframes settingsContentFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Add a subtle fade-in for the favorites empty state */
+#favoritesList:empty::before {
+    animation: favoritesEmptyFadeIn 0.8s;
+}
+@keyframes favoritesEmptyFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Add a subtle fade-in for the quote author */
+.quote-author {
+    animation: quoteAuthorFadeIn 0.8s;
+}
+@keyframes quoteAuthorFadeIn {
+    from { opacity: 0; }
+    to { opacity: 0.85; }
+}
+
+/* Add a subtle fade-in for the quote box on quote change */
+.quote-box.fade-in {
+    animation: quoteFadeIn 0.5s;
+}
+@keyframes quoteFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Add a subtle fade-in for the quote box on load */
+.quote-box.initial-fade {
+    animation: initialFadeIn 1s;
+}
+@keyframes initialFadeIn {
+    from { opacity: 0; transform: scale(0.97); }
+    to { opacity: 1; transform: scale(1); }
+}

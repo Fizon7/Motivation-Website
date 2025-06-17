@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Motivation Generator</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* ...existing styles... */
+        body.dark { background: #181c24; color: #f3f3f3; }
+        body.dark main, body.dark [id$="Modal"] > div { background: #23283a; color: #f3f3f3; }
+        body.dark #generateBtn { background: #2563eb; }
+        body.dark #generateBtn:focus, body.dark #generateBtn:hover { background: #4f8cff; }
+        body.dark #toast { background: #222; color: #fff; }
+        #progressBarContainer {
+            width: 100%; background: #eee; border-radius: 1em; margin: 1em 0; height: 1em;
+        }
+        #progressBar {
+            height: 100%; background: #4f8cff; border-radius: 1em; width: 0%;
+            transition: width 0.4s;
+        }
+        #favoritesSearch {
+            width: 90%; padding: 0.5em; margin-bottom: 1em; border-radius: 0.5em; border: 1px solid #ccc;
+        }
+        /* ...rest of your styles... */
+    </style>
+</head>
+<body>
+    <a href="#mainContent" id="skip">Skip to main content</a>
+    <header>
+        <h1>Motivation Generator</h1>
+        <p>Get inspired with a click!</p>
+    </header>
+    <main id="mainContent" tabindex="-1">
+        <div id="dailyQuote" style="font-size:1.1rem; color:#2563eb; text-align:center; margin-bottom:1em;"></div>
+        <div class="quote-box" id="quoteBox" aria-live="polite">
+            Click the button to generate motivation!
+        </div>
+        <div id="quoteAuthor"></div>
+        <div id="progressBarContainer" title="Quotes generated today">
+            <div id="progressBar"></div>
+        </div>
+        <div id="quoteActions" aria-label="Quote actions">
+            <button id="favoriteBtn" aria-label="Save to favorites" title="Save to favorites">⭐</button>
+            <button id="copyBtn" aria-label="Copy quote" title="Copy quote">📋</button>
+            <button id="shareBtn" aria-label="Share quote" title="Share quote">🔗</button>
+            <button id="printBtn" aria-label="Print quote" title="Print quote">🖨️</button>
+            <button id="ttsBtn" aria-label="Listen to quote" title="Listen to quote">🔊</button>
+            <button id="historyBtn" aria-label="Quote history" title="Quote history">🕑</button>
+        </div>
+        <button id="generateBtn" aria-label="Generate a new motivational quote">Motivate Me!</button>
+        <button id="themeSwitcher" aria-label="Switch theme" title="Switch theme">🌙</button>
+    </main>
+    <!-- Favorites Modal -->
+    <div id="favoritesModal" aria-modal="true" role="dialog" tabindex="-1" aria-labelledby="favoritesTitle" aria-hidden="true">
+        <div>
+            <button id="closeFavorites" aria-label="Close">✖️</button>
+            <h2 id="favoritesTitle">Your Favorite Quotes</h2>
+            <input type="text" id="favoritesSearch" placeholder="Search favorites..." aria-label="Search favorites"/>
+            <ul id="favoritesList"></ul>
+            <button id="exportFavorites">Export</button>
+            <button id="importFavorites">Import</button>
+            <button id="clearFavorites">Clear All</button>
+            <input type="file" id="importFile" accept=".json" aria-label="Import favorites from file"/>
+        </div>
+    </div>
+    <!-- ...rest of your modals... -->
+    <div id="helpModal" aria-modal="true" role="dialog" tabindex="-1" aria-labelledby="helpTitle" aria-hidden="true">
+        <div>
+            <button id="closeHelp" aria-label="Close">✖️</button>
+            <h2 id="helpTitle">How to Use</h2>
+            <ul>
+                <li>Click <b>Motivate Me!</b> to generate a new quote.</li>
+                <li>Click the <b>star</b> to save a quote to your favorites.</li>
+                <li>Click the <b>moon/sun</b> icon to switch themes.</li>
+                <li>Access your favorites and more options from the footer.</li>
+                <li>Use keyboard: <kbd>Tab</kbd> to navigate, <kbd>Enter</kbd> to activate.</li>
+                <li>Click <b>🔊</b> to listen to the quote.</li>
+                <li>Click <b>🕑</b> to view your quote history.</li>
+                <li>Keyboard shortcuts: <kbd>n</kbd> (new), <kbd>f</kbd> (favorite), <kbd>c</kbd> (copy), <kbd>s</kbd> (share), <kbd>h</kbd> (history), <kbd>Esc</kbd> (close modal)</li>
+            </ul>
+            <button id="openCredits">Credits</button>
+            <button id="closeHelpBtn">Close</button>
+        </div>
+    </div>
+    <!-- ...rest of your modals... -->
+    <canvas id="bgCanvas" aria-hidden="true"></canvas>
+    <div id="toast" role="status" aria-live="polite"></div>
+    <footer>
+        Made by Omar &mdash;
+        <a href="#" id="openFavorites">Favorites</a> |
+        <a href="#" id="openHelp">Help</a> |
+        <a href="#" id="openSettings">Settings</a>
+    </footer>
+    <script>
+    // --- Enhanced Motivation Generator JS ---
+    // Expanded quotes
+    const quotes = [
+        { text: "The best way to get started is to quit talking and begin doing.", author: "Walt Disney" },
+        { text: "Don't let yesterday take up too much of today.", author: "Will Rogers" },
+        { text: "It's not whether you get knocked down, it's whether you get up.", author: "Vince Lombardi" },
+        { text: "If you are working on something exciting, it will keep you motivated.", author: "Steve Jobs" },
+        { text: "Success is not in what you have, but who you are.", author: "Bo Bennett" },
+        { text: "The harder you work for something, the greater you'll feel when you achieve it.", author: "Unknown" },
+        { text: "Dream bigger. Do bigger.", author: "Unknown" },
+        { text: "Push yourself, because no one else is going to do it for you.", author: "Unknown" },
+        { text: "Great things never come from comfort zones.", author: "Unknown" },
+        { text: "Success doesn’t just find you. You have to go out and get it.", author: "Unknown" },
+        { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
+        { text: "Act as if what you do makes a difference. It does.", author: "William James" },
+        { text: "What you get by achieving your goals is not as important as what you become by achieving your goals.", author: "Zig Ziglar" },
+        { text: "You are never too old to set another goal or to dream a new dream.", author: "C.S. Lewis" },
+        { text: "Try to be a rainbow in someone else's cloud.", author: "Maya Angelou" }
+    ];
+    // State
+    let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    let history = JSON.parse(localStorage.getItem('history') || '[]');
+    let currentQuote = null;
+    let darkTheme = localStorage.getItem('theme') === 'dark';
+    let today = new Date().toISOString().slice(0,10);
+    let dailyQuoteIdx = parseInt(localStorage.getItem('dailyQuoteIdx') || Math.floor(Math.random()*quotes.length));
+    let dailyQuoteDate = localStorage.getItem('dailyQuoteDate');
+    if (dailyQuoteDate !== today) {
+        dailyQuoteIdx = Math.floor(Math.random()*quotes.length);
+        localStorage.setItem('dailyQuoteIdx', dailyQuoteIdx);
+        localStorage.setItem('dailyQuoteDate', today);
+    }
+    // DOM
+    const quoteBox = document.getElementById('quoteBox');
+    const quoteAuthor = document.getElementById('quoteAuthor');
+    const favoriteBtn = document.getElementById('favoriteBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const shareBtn = document.getElementById('shareBtn');
+    const printBtn = document.getElementById('printBtn');
+    const ttsBtn = document.getElementById('ttsBtn');
+    const historyBtn = document.getElementById('historyBtn');
+    const generateBtn = document.getElementById('generateBtn');
+    const themeSwitcher = document.getElementById('themeSwitcher');
+    const toast = document.getElementById('toast');
+    const progressBar = document.getElementById('progressBar');
+    const dailyQuoteDiv = document.getElementById('dailyQuote');
+    // Utility: Toast notification
+    function showToast(msg) {
+        toast.textContent = msg;
+        toast.className = 'show';
+        setTimeout(() => { toast.className = toast.className.replace('show', ''); }, 2000);
+    }
+    // Utility: Save state
+    function saveState() {
+        localStorage.setItem('favorites', JSON.stringify(favorites));
+        localStorage.setItem('history', JSON.stringify(history));
+    }
+    // Generate random quote
+    function getRandomQuote() {
+        let idx = Math.floor(Math.random() * quotes.length);
+        return quotes[idx];
+    }
+    // Render quote
+    function renderQuote(quote, animate = true) {
+        if (!quote) return;
+        currentQuote = quote;
+        if (animate && document.getElementById('animationToggle')?.checked) {
+            quoteBox.style.opacity = 0;
+            quoteAuthor.style.opacity = 0;
+            setTimeout(() => {
+                quoteBox.textContent = quote.text;
+                quoteAuthor.textContent = quote.author ? `— ${quote.author}` : '';
+                quoteBox.style.opacity = 1;
+                quoteAuthor.style.opacity = 1;
+            }, 250);
+        } else {
+            quoteBox.textContent = quote.text;
+            quoteAuthor.textContent = quote.author ? `— ${quote.author}` : '';
+        }
+        favoriteBtn.classList.toggle('active', isFavorite(quote));
+    }
+    // Check if quote is favorite
+    function isFavorite(quote) {
+        return favorites.some(q => q.text === quote.text && q.author === quote.author);
+    }
+    // Add to favorites
+    favoriteBtn.addEventListener('click', () => {
+        if (!currentQuote) return;
+        if (isFavorite(currentQuote)) {
+            favorites = favorites.filter(q => !(q.text === currentQuote.text && q.author === currentQuote.author));
+            showToast('Removed from favorites');
+        } else {
+            favorites.push(currentQuote);
+            showToast('Added to favorites');
+        }
+        favoriteBtn.classList.toggle('active', isFavorite(currentQuote));
+        saveState();
+        renderFavorites();
+    });
+    // Copy quote
+    copyBtn.addEventListener('click', () => {
+        if (!currentQuote) return;
+        navigator.clipboard.writeText(`"${currentQuote.text}" ${currentQuote.author ? '— ' + currentQuote.author : ''}`);
+        showToast('Copied to clipboard');
+    });
+    // Share quote
+    shareBtn.addEventListener('click', async () => {
+        if (!currentQuote) return;
+        const shareData = {
+            title: 'Motivational Quote',
+            text: `"${currentQuote.text}" ${currentQuote.author ? '— ' + currentQuote.author : ''}`
+        };
+        if (navigator.share) {
+            await navigator.share(shareData);
+        } else {
+            showToast('Sharing not supported');
+        }
+    });
+    // Print quote
+    printBtn.addEventListener('click', () => {
+        if (!currentQuote) return;
+        const w = window.open('', '', 'width=400,height=300');
+        w.document.write(`<p style="font-family:sans-serif;font-size:1.2em;">"${currentQuote.text}"<br><em>${currentQuote.author ? '— ' + currentQuote.author : ''}</em></p>`);
+        w.print();
+        w.close();
+    });
+    // Text-to-speech
+    ttsBtn.addEventListener('click', () => {
+        if (!currentQuote) return;
+        const utter = new SpeechSynthesisUtterance(`${currentQuote.text} ${currentQuote.author ? 'by ' + currentQuote.author : ''}`);
+        utter.rate = 1;
+        window.speechSynthesis.speak(utter);
+    });
+    // Generate new quote
+    generateBtn.addEventListener('click', () => {
+        let quote = getRandomQuote();
+        renderQuote(quote);
+        // Add to history
+        history.unshift({ ...quote, date: today });
+        if (history.length > 30) history.pop();
+        saveState();
+        updateProgressBar();
+        if (document.getElementById('soundToggle')?.checked) {
+            let audio = new Audio('https://cdn.pixabay.com/audio/2022/07/26/audio_124bfa1e6e.mp3');
+            audio.play();
+        }
+    });
+    // Theme switcher
+    themeSwitcher.addEventListener('click', () => {
+        darkTheme = !darkTheme;
+        document.body.classList.toggle('dark', darkTheme);
+        themeSwitcher.textContent = darkTheme ? '☀️' : '🌙';
+        localStorage.setItem('theme', darkTheme ? 'dark' : 'light');
+    });
+    if (darkTheme) {
+        document.body.classList.add('dark');
+        themeSwitcher.textContent = '☀️';
+    }
+    // --- Modal logic (Favorites, Help, Credits, Settings, History) ---
+    function openModal(id) {
+        document.getElementById(id).classList.add('active');
+        document.getElementById(id).setAttribute('aria-hidden', 'false');
+        setTimeout(() => {
+            document.getElementById(id).focus();
+        }, 100);
+    }
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('active');
+        document.getElementById(id).setAttribute('aria-hidden', 'true');
+    }
+    document.getElementById('openFavorites').onclick = e => { e.preventDefault(); renderFavorites(); openModal('favoritesModal'); };
+    document.getElementById('closeFavorites').onclick = () => closeModal('favoritesModal');
+    document.getElementById('openHelp').onclick = e => { e.preventDefault(); openModal('helpModal'); };
+    document.getElementById('closeHelp').onclick = () => closeModal('helpModal');
+    document.getElementById('closeHelpBtn').onclick = () => closeModal('helpModal');
+    document.getElementById('openCredits').onclick = () => { closeModal('helpModal'); openModal('creditsModal'); };
+    document.getElementById('closeCredits').onclick = () => closeModal('creditsModal');
+    document.getElementById('closeCreditsBtn').onclick = () => closeModal('creditsModal');
+    document.getElementById('openSettings').onclick = e => { e.preventDefault(); openModal('settingsModal'); };
+    document.getElementById('closeSettings').onclick = () => closeModal('settingsModal');
+    document.getElementById('closeSettingsBtn').onclick = () => closeModal('settingsModal');
+    // History modal
+    historyBtn.addEventListener('click', () => { renderHistory(); openModal('historyModal'); });
+    document.getElementById('closeHistory').onclick = () => closeModal('historyModal');
+    document.getElementById('clearHistory').onclick = () => { history = []; saveState(); renderHistory(); showToast('History cleared'); updateProgressBar(); };
+    // Render favorites with search
+    function renderFavorites() {
+        const list = document.getElementById('favoritesList');
+        const search = document.getElementById('favoritesSearch').value.trim().toLowerCase();
+        list.innerHTML = '';
+        let filtered = favorites;
+        if (search) {
+            filtered = favorites.filter(q =>
+                q.text.toLowerCase().includes(search) ||
+                (q.author && q.author.toLowerCase().includes(search))
+            );
+        }
+        if (filtered.length === 0) {
+            list.innerHTML = '<li>No favorites yet.</li>';
+            return;
+        }
+        filtered.forEach((q, i) => {
+            const li = document.createElement('li');
+            li.innerHTML = `"${q.text}" <em>${q.author ? '— ' + q.author : ''}</em> <button aria-label="Remove" title="Remove" data-i="${i}">🗑️</button>`;
+            li.querySelector('button').onclick = () => {
+                const idx = favorites.findIndex(f => f.text === q.text && f.author === q.author);
+                if (idx > -1) favorites.splice(idx, 1);
+                saveState();
+                renderFavorites();
+                showToast('Removed from favorites');
+            };
+            list.appendChild(li);
+        });
+    }
+    document.getElementById('favoritesSearch').addEventListener('input', renderFavorites);
+    // Export favorites
+    document.getElementById('exportFavorites').onclick = () => {
+        const blob = new Blob([JSON.stringify(favorites, null, 2)], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'favorites.json';
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+    // Import favorites
+    document.getElementById('importFavorites').onclick = () => document.getElementById('importFile').click();
+    document.getElementById('importFile').onchange = function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            try {
+                const imported = JSON.parse(ev.target.result);
+                if (Array.isArray(imported)) {
+                    favorites = imported;
+                    saveState();
+                    renderFavorites();
+                    showToast('Favorites imported');
+                }
+            } catch { showToast('Invalid file'); }
+        };
+        reader.readAsText(file);
+    };
+    // Clear favorites
+    document.getElementById('clearFavorites').onclick = () => {
+        favorites = [];
+        saveState();
+        renderFavorites();
+        showToast('Favorites cleared');
+    };
+    // Render history
+    function renderHistory() {
+        const list = document.getElementById('historyList');
+        list.innerHTML = '';
+        if (history.length === 0) {
+            list.innerHTML = '<li>No history yet.</li>';
+            return;
+        }
+        history.slice(0, 30).forEach(q => {
+            const li = document.createElement('li');
+            li.innerHTML = `"${q.text}" <em>${q.author ? '— ' + q.author : ''}</em>`;
+            list.appendChild(li);
+        });
+    }
+    // Keyboard shortcuts and modal close with Esc
+    document.addEventListener('keydown', e => {
+        if (e.key === 'n' && document.activeElement.tagName !== 'INPUT') {
+            generateBtn.click();
+        }
+        if (e.key === 'f' && document.activeElement.tagName !== 'INPUT') {
+            favoriteBtn.click();
+        }
+        if (e.key === 'c' && document.activeElement.tagName !== 'INPUT') {
+            copyBtn.click();
+        }
+        if (e.key === 's' && document.activeElement.tagName !== 'INPUT') {
+            shareBtn.click();
+        }
+        if (e.key === 'h' && document.activeElement.tagName !== 'INPUT') {
+            historyBtn.click();
+        }
+        if (e.key === 'Escape') {
+            document.querySelectorAll('[id$="Modal"].active').forEach(modal => closeModal(modal.id));
+        }
+    });
+    // Progress bar for today's quotes
+    function updateProgressBar() {
+        let todayQuotes = history.filter(q => q.date === today).length;
+        let percent = Math.min(todayQuotes * 10, 100);
+        progressBar.style.width = percent + '%';
+        progressBar.title = `${todayQuotes} quotes generated today`;
+    }
+    // Daily quote
+    function renderDailyQuote() {
+        const q = quotes[dailyQuoteIdx];
+        dailyQuoteDiv.innerHTML = `<b>Quote of the Day:</b> "${q.text}" <em>${q.author ? '— ' + q.author : ''}</em>`;
+    }
+    // On load: show last quote or random, daily quote, progress bar
+    renderDailyQuote();
+    updateProgressBar();
+    if (history.length > 0) {
+        renderQuote(history[0], false);
+    } else {
+        renderQuote(getRandomQuote(), false);
+    }
+    </script>
+</body>
+</html>
+<!-- Credits Modal -->
+<div id="creditsModal" aria-modal="true" role="dialog" tabindex="-1" aria-labelledby="creditsTitle" aria-hidden="true">
+    <div>
+        <button id="closeCredits" aria-label="Close">✖️</button>
+        <h2 id="creditsTitle">Credits</h2>
+        <ul>
+            <li>Quotes curated by Omar</li>
+            <li>Design &amp; code by Omar</li>
+            <li>Icons: Emoji Unicode</li>
+            <li>Sound: Pixabay</li>
+            <li>Font: Montserrat (Google Fonts)</li>
+        </ul>
+        <button id="closeCreditsBtn">Close</button>
+    </div>
+</div>
+<!-- Settings Modal -->
+<div id="settingsModal" aria-modal="true" role="dialog" tabindex="-1" aria-labelledby="settingsTitle" aria-hidden="true">
+    <div>
+        <button id="closeSettings" aria-label="Close">✖️</button>
+        <h2 id="settingsTitle">Settings</h2>
+        <label>
+            <input type="checkbox" id="animationToggle" checked>
+            Enable quote animation
+        </label>
+        <br>
+        <label>
+            <input type="checkbox" id="soundToggle" checked>
+            Play sound on new quote
+        </label>
+        <br>
+        <button id="closeSettingsBtn">Close</button>
+    </div>
+</div>
+<!-- History Modal -->
+<div id="historyModal" aria-modal="true" role="dialog" tabindex="-1" aria-labelledby="historyTitle" aria-hidden="true" style="display:flex;align-items:center;justify-content:center;">
+    <div style="background:#fff; color:#23283a; border-radius:1em; box-shadow:0 4px 24px rgba(0,0,0,0.15); padding:2em 1.5em; max-width:400px; width:90%; position:relative;">
+        <button id="closeHistory" aria-label="Close" style="position:absolute;top:1em;right:1em;background:none;border:none;font-size:1.2em;cursor:pointer;">✖️</button>
+        <h2 id="historyTitle" style="margin-top:0;text-align:center;font-family:'Montserrat',sans-serif;font-weight:700;">Quote History</h2>
+        <ul id="historyList" style="list-style:none;padding:0;max-height:220px;overflow-y:auto;margin-bottom:1em;">
+            <!-- History items injected here -->
+        </ul>
+        <button id="clearHistory" style="background:#2563eb;color:#fff;border:none;padding:0.6em 1.2em;border-radius:0.5em;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:500;transition:background 0.2s;">Clear History</button>
+    </div>
+</div>
